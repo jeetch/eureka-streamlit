@@ -3,7 +3,6 @@ import replicate
 from dotenv import load_dotenv
 import os
 import json
-import toml
 
 # Load environment variables from .env file
 load_dotenv()
@@ -17,24 +16,23 @@ else:
     # Set the Replicate API token in the environment
     os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
-    # Streamlit input field for user's prompt
-    user_prompt = st.text_area("Enter your prompt", key="user_prompt")
+    # Sidebar for input fields and buttons
+    with st.sidebar:
+        st.sidebar.header("AI App Idea Generator")
+        user_prompt = st.text_area("Enter your prompt", key="user_prompt")
 
-    # Add buttons
-    col1, col2 = st.columns(2)
-    with col1:
+        # Add buttons
         generate_button = st.button("Generate Response")
-    with col2:
         lucky_button = st.button("I'm Feeling Lucky")
 
-    # Check which button was pressed
-    if generate_button:
-        prompt_to_use = user_prompt
-    elif lucky_button:
-        prompt_to_use = "random AI app idea"
-        st.text_area("Lucky Prompt", value=prompt_to_use, key="lucky_prompt", disabled=True)
-    else:
-        prompt_to_use = None
+        # Check which button was pressed
+        if generate_button:
+            prompt_to_use = user_prompt
+        elif lucky_button:
+            prompt_to_use = "random AI app idea"
+            st.text_area("Lucky Prompt", value=prompt_to_use, key="lucky_prompt", disabled=True)
+        else:
+            prompt_to_use = None
 
     if prompt_to_use:
         # Display the prompt to be used
@@ -82,23 +80,42 @@ assistant
                 # Extract the primary color
                 primary_color = json_data.get("Primary_Color", "#FFFFFF")  # Default to white if not found
 
-                # Update the config.toml file
-                config_path = ".streamlit/config.toml"
-                with open(config_path, "r") as config_file:
-                    config_data = toml.load(config_file)
-                
-                config_data["theme"]["primaryColor"] = primary_color
-                config_data["theme"]["backgroundColor"] = primary_color
+                # Apply custom CSS to change the background color of the main page
+                st.markdown(
+                    f"""
+                    <style>
+                    .stApp {{
+                        background-color: {primary_color};
+                    }}
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-                with open(config_path, "w") as config_file:
-                    toml.dump(config_data, config_file)
+                # Display the JSON output using st-card
+                name = json_data.get("Name", "App Name")
+                tagline = json_data.get("Tagline", "App Tagline")
+                description = json_data.get("Description", "App Description")
 
-                st.success(f'Primary color updated to: {primary_color}')
-
-                # Display the JSON output
-                st.write(json_data) 
+                st.write(f"### {name}")
+                st.write(f"**{tagline}**")
+                st.write(description)
 
             except json.JSONDecodeError:
                 st.error("Failed to parse the JSON response. Please try again.")
             except Exception as e:
                 st.error(f"An error occurred: {str(e)}")
+
+# Apply the primary color if it is set in session state
+if "primary_color" in st.session_state:
+    primary_color = st.session_state.primary_color
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-color: {primary_color};
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
