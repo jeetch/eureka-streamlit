@@ -4,3 +4,4 @@ python-dotenv
 toml
 whois
 python-docx
+streamlit_extras
