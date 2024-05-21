@@ -21,6 +21,18 @@ else:
     # Set the Replicate API token in the environment
     os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
+    st.set_page_config(page_title="Eureka 💡", page_icon="💡", layout="wide", initial_sidebar_state="expanded", menu_items={
+        'Get Help': 'https://www.jeetchaudhuri.com/',
+        'Report a bug': "https://www.jeetchaudhuri.com/",
+        'About': """
+            This is an official submission for THE FUTURE OF AI IS OPEN hackathon by Jeet Chaudhuri.
+
+            Check out my [website](https://www.jeetchaudhuri.com) for more information.
+
+            The source code for this project is available on [GitHub](https://github.com/jeetch/eureka-streamlit).
+            """
+    })
+
     # Function to check if domain exists
     def check_domain_exists(domain_name):
         try:
@@ -202,7 +214,7 @@ else:
                     doc_output.seek(0)
 
                     b64 = base64.b64encode(doc_output.read()).decode()
-                    href = f'<a href="data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,{b64}" download="{filename}">Download {filename} 📄</a>'
+                    href = f'<a href="data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,{b64}" download="{filename}">Download as DOCX 📄</a>'
                     return href
 
                 # Button to download markdown as DOCX
